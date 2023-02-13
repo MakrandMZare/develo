@@ -25,8 +25,9 @@ router.post("/register", async (req, res) => {
 //LOGIN
 router.post("/login", async (req, res) => {
     try {
-        const user = await User.findOne({ mobile: req.body.mobile })
+        const user = await User.findOne({ mobile: req.body.mobile });
         !user && res.status(401).json("Wrong Credentials")
+
         const hashedPassword = CryptoJS.AES.decrypt(
             user.password,
             process.env.PASS_SEC
@@ -40,14 +41,12 @@ router.post("/login", async (req, res) => {
             id: user._id,
             isAdmin: user.isAdmin,
         }, process.env.JWT_SEC,
-            { expiresIn: "3d" }
+            { expiresIn: "7d" }
         );
-
 
         const { password, ...others } = user._doc;
 
         res.status(200).json({...others, accessToken});
-
     } catch (err) {
         res.status(500).json(err);
     }
